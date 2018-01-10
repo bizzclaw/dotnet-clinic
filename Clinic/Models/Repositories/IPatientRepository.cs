@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ToDoList.Models
+namespace Clinic.Models
 {
     public interface IPatientRepository
     {

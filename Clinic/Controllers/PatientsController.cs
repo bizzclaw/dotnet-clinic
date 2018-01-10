@@ -13,62 +13,73 @@ namespace Clinic.Controllers
 {
     public class PatientsController : Controller
     {
-		private ClinicListContext db = new ClinicListContext();
+		private IPatientRepository patientRepo;
 
-		public IActionResult Index()
+		public PatientsController(IPatientRepository repo = null)
+		{
+			if (repo == null)
+			{
+				this.patientRepo = new EFPatientRepository();
+			}
+			else
+			{
+				this.patientRepo = repo;
+			}
+		}
+
+
+		public ViewResult Index()
         {
-            return View(db.patients.Include(PatientsController => PatientsController.Doctor).ToList());
-        }
+			return View(patientRepo.Patients.ToList());
+		}
 
 		public IActionResult Details(int id)
 		{
-			Patient model = db.patients.FirstOrDefault(patients => patients.Id == id);
-			return View(model);
+			Patient thisPatient = patientRepo.Patients.FirstOrDefault(x => x.Id == id);
+			return View(thisPatient);
 		}
 
 		public IActionResult Create()
 		{
-            //bellow adds list of doctors - One must be selected per patient
-            List<Doctor> model = db.doctors.ToList();
-            //ViewBag.CategoryId = new SelectList(db.Doctors, "Id", "Name");
-			return View(model);
+            return View();
 		}
 
 		[HttpPost]
 		public IActionResult Create(Patient patient)
 		{
-			db.patients.Add(patient);
-			db.SaveChanges();
+			patientRepo.Save(patient);   // Updated
+								   // Removed db.SaveChanges() call
 			return RedirectToAction("Index");
 		}
 
 		public IActionResult Edit(int id)
 		{
-			var model = db.patients.FirstOrDefault(patients => patients.Id == id);
-            ViewBag.CategoryId = new SelectList(db.doctors, "Id", "Name");
-			return View(model);
+			Patient thisPatient = patientRepo.Patients.FirstOrDefault(x => x.Id == id);
+			return View(thisPatient);
+
 		}
 
 		[HttpPost]
 		public IActionResult Edit(Patient patient)
 		{
-			db.Entry(patient).State = EntityState.Modified;
-			db.SaveChanges();
+			patientRepo.Edit(patient);   // Updated!
+								   // Removed db.SaveChanges() call
 			return RedirectToAction("Index");
 		}
 
 		public IActionResult Delete(int id)
 		{
-			var model = db.patients.FirstOrDefault(patients => patients.Id == id);
-			return View(model);
+			Patient thisPatient = patientRepo.Patients.FirstOrDefault(x => x.Id == id);
+			return View(thisPatient);
 		}
 
 		[HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
 		{
-            var thisPatient = db.patients.FirstOrDefault(patients => patients.Id == id);
-            db.patients.Remove(thisPatient);
-            db.SaveChanges();
+			// Updated:
+			Patient thisPatient = patientRepo.Patients.FirstOrDefault(x => x.Id == id);
+			patientRepo.Remove(thisPatient);   // Updated!
+										 // Removed db.SaveChanges() call
 			return RedirectToAction("Index");
 		}
 	}

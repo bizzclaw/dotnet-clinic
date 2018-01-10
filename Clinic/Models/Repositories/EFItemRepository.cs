@@ -4,18 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ToDoList.Models
+namespace Clinic.Models
 {
 	public class EFPatientRepository : IPatientRepository
 	{
-		ToDoListContext db = new ToDoListContext();
+		ClinicListContext db = new ClinicListContext();
 
-		public IQueryable<Patient> patients
+		public IQueryable<Patient> Patients
 		{ get { return db.patients; } }
 
 		public Patient Save(Patient patient)
 		{
-			db.Items.Add(patient);
+			db.patients.Add(patient);
 			db.SaveChanges();
 			return patient;
 		}
@@ -29,7 +29,7 @@ namespace ToDoList.Models
 
 		public void Remove(Patient patient)
 		{
-			db.Items.Remove(patient);
+			db.patients.Remove(patient);
 			db.SaveChanges();
 		}
 	}
